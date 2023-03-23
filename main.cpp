@@ -51,19 +51,108 @@ int Pop (PILHA *p, char *v)
    return 1;
 }
 
-void analise_sintatica(PILHA *p)
+void analise_sintatica(PILHA *p, PILHA *x)
 {
 	char * matriz[6][10];
-	
-	for (int i = 0; i < 5; i++)
+
+	//char * primeiroE[3][3] = {"id","num","("};
+
+	matriz[1][0] = "E";
+	matriz[2][0] = "T";
+	matriz[3][0] = "S";
+	matriz[4][0] = "G";
+	matriz[5][0] = "F";
+
+	matriz[1][0] = "id";
+	matriz[2][0] = "num";
+	matriz[3][0] = "+";
+	matriz[4][0] = "-";
+	matriz[5][0] = "*";
+	matriz[6][0] = "/";
+	matriz[7][0] = "(";
+	matriz[8][0] = ")";
+	matriz[9][0] = "S";
+
+
+
+	for (int i = 1; i < 6; i++)
 	{
-		for (int j = 0; j < 9; j ++)
+		if (matriz[i][0] == "E")
 		{
-			
+			matriz[i][1] = "TS";
+			matriz[i][2] = "TS";
+			matriz[i][7] = "TS";
+		}
+		else if (matriz[i][0] == "T")
+		{
+			matriz[i][1] = "FG";
+			matriz[i][2] = "FG";
+			matriz[i][7] = "FG";
+		}
+		else if (matriz[i][0] == "S")
+		{
+			matriz[i][3] = "+TS";
+			matriz[i][4] = "-TS";
+		}
+		else if (matriz[i][0] == "G")
+		{
+			matriz[i][5] = "*FG";
+			matriz[i][6] = "/FG";
+		}
+		else if (matriz[i][0] == "F")
+		{
+			matriz[i][1] = "id";
+			matriz[i][2] = "num";
+			matriz[i][7] = "(E)";
 		}
 	}
+	Push(p,"E");
 	while(!Vazia(p))
 	{
+		char * valorPilha = p->info[p->topo];
+		char * valorCadeia = x->info[x->topo];
+		if (valorCadeia == valorPilha)
+		{
+			Pop(p,valorPilha);
+			Pop(p,valorCadeia);
+		}
+		else if (isupper(valorPilha))
+		{
+			for (int i = 1; i < 6; i++)
+			{
+				if (matriz[i][0] == valorPilha)
+				{
+					int indiceRegra = i;
+				}
+			}
+			for (int j = 0; j < 9; j++)
+			{
+				if (matriz[0][j] == valorCadeia)
+				{
+					int indiceToken = j;
+				}
+						
+			}
+
+			char * regra = matriz[indiceRegra][indiceToken];
+			Pop(p,valorPilha);
+			if (islower(regra))
+			{
+				Push(p,regra);
+			}
+			else
+			{
+				for (int k = 0; k < strlen(regra); k++)
+				{
+					Push(p,regra[k]);
+				}
+			}
+		}
+		else
+		{
+			printf("deu bo");
+		}
+		
 		
 	}
 }
@@ -109,9 +198,6 @@ int main() {
 	getch();
 	return 0;
 }
-
-
-
 
 
 

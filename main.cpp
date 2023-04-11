@@ -1,57 +1,31 @@
 #include <iostream>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <ctype.h>
+#include <stack>
 #include <conio.h>
 
-#define tam 10
+using namespace std;
 
-typedef struct
+bool verificaUpper(char* token)
 {
-  int topo;
-  char info[tam][3];  // lugar onde ser?o armaz. os dados
-} PILHA;
-
-void Inicializa (PILHA *p)
-{
-  p->topo=-1;
+	for (int i = 0; i < strlen(token); i++)
+	{
+		if (!isupper(token[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+	
 }
 
-
-int Cheia (PILHA *p)
+bool verificaLower(char* token)
 {
-  return (p->topo==tam-1);
+
 }
 
-
-int Vazia(PILHA *p)
-{
-  return (p->topo==-1);
-}
-
-
-int Push (PILHA *p, char v)
-{
-   if (Cheia(p))
-	  return 0; // pilha cheia
-
-   p->info[++p->topo]=v;
-
-   return 1;
-}
-
-
-int Pop (PILHA *p, char *v)
-{
-   if (Vazia(p))
-	  return 0;  // pilha vazia
-
-   *v = p->info[p->topo--];
-
-   return 1;
-}
-
-void analise_sintatica(PILHA *p, PILHA *x)
+void analise_sintatica(stack<string>& P,stack<string>& 	X)
 {
 	char * matriz[6][10];
 
@@ -106,45 +80,47 @@ void analise_sintatica(PILHA *p, PILHA *x)
 			matriz[i][7] = "(E)";
 		}
 	}
-	Push(p,"E");
-	while(!Vazia(p))
+	P.push("E");
+	while(!P.empty())
 	{
-		char * valorPilha = p->info[p->topo];
-		char * valorCadeia = x->info[x->topo];
+		char * valorPilha = &P.top()[0];
+		char * valorCadeia = &X.top()[0];
 		if (valorCadeia == valorPilha)
 		{
-			Pop(p,valorPilha);
-			Pop(p,valorCadeia);
+			P.pop();
+			X.pop();
 		}
-		else if (isupper(valorPilha))
+		else if (isupper(valorPilha[0]))
 		{
+			int indiceRegra;
+			int indiceToken;
 			for (int i = 1; i < 6; i++)
 			{
 				if (matriz[i][0] == valorPilha)
 				{
-					int indiceRegra = i;
+					indiceRegra = i;
 				}
 			}
 			for (int j = 0; j < 9; j++)
 			{
 				if (matriz[0][j] == valorCadeia)
 				{
-					int indiceToken = j;
-				}
-						
+					indiceToken = j;
+				}	
 			}
 
 			char * regra = matriz[indiceRegra][indiceToken];
-			Pop(p,valorPilha);
-			if (islower(regra))
+			P.pop();
+			if (islower(regra[0]))
 			{
-				Push(p,regra);
+				P.push(regra);
 			}
 			else
 			{
-				for (int k = 0; k < strlen(regra); k++)
+
+				for (int k = strlen(regra); k > 0; k--)
 				{
-					Push(p,regra[k]);
+					P.push(regra[k]);
 				}
 			}
 		}
@@ -157,7 +133,7 @@ void analise_sintatica(PILHA *p, PILHA *x)
 	}
 }
 
-void analise_lexica(char* linha)
+char* analise_lexica(char* linha)
 {	int i = 0;
 	while(i<strlen(linha))
 	{
@@ -185,14 +161,13 @@ void analise_lexica(char* linha)
 		{
 			continue;
 		}
-		printf("%s\n",token);
+		return token;
 	}
 }
 
 int main() {
-	PILHA P,X;
-	Inicializa(&P);
-	Inicializa(&X);
+	stack<string> P;
+	stack<string> X;
 	char teste[] = "teste=>32!=12";
 	analise_lexica(teste);
 	getch();

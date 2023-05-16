@@ -117,11 +117,13 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 			}
 			else
 			{
+				char token_invertido[10] = "";
 
-				for (int k = strlen(regra); k > 0; k--)
+				for (int k = strlen(regra), z = 0; k > 0 && z < strlen(regra); k--, z++)
 				{
-					P.push(regra[k]);
+					token_invertido[z] = regra[k];
 				}
+				analise_lexica(token_invertido,P);
 			}
 		}
 		else
@@ -133,7 +135,7 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 	}
 }
 
-char* analise_lexica(char* linha)
+void analise_lexica(char* linha, stack<string>& P)
 {	int i = 0;
 	while(i<strlen(linha))
 	{
@@ -161,15 +163,14 @@ char* analise_lexica(char* linha)
 		{
 			continue;
 		}
-		return token;
+		P.push(token);
 	}
 }
 
 int main() {
 	stack<string> P;
 	stack<string> X;
-	char teste[] = "teste=>32!=12";
-	analise_lexica(teste);
+	char teste[] = "teste=>3";
 	getch();
 	return 0;
 }

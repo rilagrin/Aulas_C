@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <cstring>
 #include <ctype.h>
 #include <stack>
 #include <conio.h>
@@ -25,6 +26,38 @@ bool verificaLower(char* token)
 
 }
 
+void analise_lexica(char* linha, stack<string>& P)
+{	int i = 0;
+	while(i<strlen(linha))
+	{
+		int j = 0;
+		char token[10] = "";
+		
+		if (isalnum(linha[i]))
+		{
+			while (isalpha(linha[i])|| isdigit(linha[i]))
+			{
+				token[j++] = linha[i++];
+			}
+			token[j]= '\0';
+		
+		}		
+		else if (ispunct(linha[i]))
+		{
+			while (ispunct(linha[i]))
+			{
+				token[j++] = linha[i++];
+			}
+			token[j]= '\0';
+		}
+		else
+		{
+			continue;
+		}
+		P.push(token);
+	}
+}
+
 void analise_sintatica(stack<string>& P,stack<string>& 	X)
 {
 	char * matriz[6][10];
@@ -37,15 +70,15 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 	matriz[4][0] = "G";
 	matriz[5][0] = "F";
 
-	matriz[1][0] = "id";
-	matriz[2][0] = "num";
-	matriz[3][0] = "+";
-	matriz[4][0] = "-";
-	matriz[5][0] = "*";
-	matriz[6][0] = "/";
-	matriz[7][0] = "(";
-	matriz[8][0] = ")";
-	matriz[9][0] = "S";
+	matriz[0][1] = "id";
+	matriz[0][2] = "num";
+	matriz[0][3] = "+";
+	matriz[0][4] = "-";
+	matriz[0][5] = "*";
+	matriz[0][6] = "/";
+	matriz[0][7] = "(";
+	matriz[0][8] = ")";
+	matriz[0][9] = "S";
 
 
 
@@ -96,7 +129,8 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 			int indiceToken;
 			for (int i = 1; i < 6; i++)
 			{
-				if (matriz[i][0] == valorPilha)
+				
+				if (strcmp(matriz[i][0],valorPilha) == 0)
 				{
 					indiceRegra = i;
 				}
@@ -109,7 +143,8 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 				}	
 			}
 
-			char * regra = matriz[indiceRegra][indiceToken];
+			char* regra = new char[strlen(matriz[indiceRegra][indiceToken]) + 1];
+			strcpy(regra,matriz[indiceRegra][indiceToken]);
 			P.pop();
 			if (islower(regra[0]))
 			{
@@ -125,55 +160,28 @@ void analise_sintatica(stack<string>& P,stack<string>& 	X)
 				}
 				analise_lexica(token_invertido,P);
 			}
+			delete[] regra;
 		}
 		else
 		{
-			printf("deu bo");
+			printf("erro");
+			break;
 		}
 		
 		
 	}
-}
-
-void analise_lexica(char* linha, stack<string>& P)
-{	int i = 0;
-	while(i<strlen(linha))
-	{
-		int j = 0;
-		char token[10] = "";
-		
-		if (isalnum(linha[i]))
-		{
-			while (isalpha(linha[i])|| isdigit(linha[i]))
-			{
-				token[j++] = linha[i++];
-			}
-			token[j]= '\0';
-		
-		}		
-		else if (ispunct(linha[i]))
-		{
-			while (ispunct(linha[i]))
-			{
-				token[j++] = linha[i++];
-			}
-			token[j]= '\0';
-		}
-		else
-		{
-			continue;
-		}
-		P.push(token);
-	}
+	printf("OK!!!!!!!!1111111111");
 }
 
 int main() {
 	stack<string> P;
 	stack<string> X;
-	char teste[] = "teste=>3";
+	X.push("id");
+	X.push("+");
+	X.push("num");
+	X.push("*");
+	X.push("id");
+	analise_sintatica(P,X);
 	getch();
 	return 0;
 }
-
-
-
